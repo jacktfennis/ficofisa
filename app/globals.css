@@ -3,3 +3,15 @@ body {
   margin: 0;
   min-height: 100%;
 }
+
+body {
+  background: color-mix(in srgb, #86A5D9 12%, white);
+}
+
+html {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
