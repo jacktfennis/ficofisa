@@ -16,7 +16,30 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-The welcome page is [app/welcome.jsx](app/welcome.jsx), rendered from `app/page.jsx`. The page auto-updates as you edit the file.
+The development server uses Next.js Fast Refresh: save changes to the app's
+components or styles and the browser updates automatically. React state is
+preserved when possible, though some changes require a full page reload.
+The server must remain running; `npm run start` serves a production build and
+does not provide Fast Refresh. Restart the development server after changing
+configuration such as `next.config.mjs` or environment variables.
+
+The welcome page is [app/welcome.jsx](app/welcome.jsx), rendered from `app/page.jsx`.
+The shared Ant Design theme in [app/antd-provider.jsx](app/antd-provider.jsx)
+uses the app's teal, purple, blue, rose, and green color palette.
+
+## Event storage
+
+Set `DATABASE_URL` to the Neon Postgres connection string in `.env.local` for
+local development. Vercel supplies this variable to the connected production
+and development environments; restart the development server after adding it.
+The table definition is in [app/schema.sql](app/schema.sql).
+
+All event fields are required, including the maximum allowed and limited-event
+message for open events. Saving creates an event, copies its ID when clipboard
+access is available, and opens `/<event-id>`. The event page is currently a
+placeholder and offers a manual copy option if clipboard access fails. Events
+are not sent to recipients yet. There is currently no authentication, so anyone
+who can access the application can create events.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
