@@ -24,6 +24,7 @@ export default function EventPlaceholder({ event, eventCode, clipboardUnavailabl
   const savingRef = useRef(false);
   const checkVersion = useRef(0);
   const channelRef = useRef(null);
+  const isFull = event.eventAttendanceType !== "open" && event.reservedCount >= event.maximumAllowed;
 
   const checkReservation = useCallback(async () => {
     if (savingRef.current) return;
@@ -83,6 +84,7 @@ export default function EventPlaceholder({ event, eventCode, clipboardUnavailabl
         router.refresh();
       } else if (result.status === "unavailable") {
         setReservationError("This event is full or the selected reservation is no longer available.");
+        router.refresh();
       } else {
         setReservationError("Please enter a valid name and try again.");
       }
@@ -247,11 +249,12 @@ export default function EventPlaceholder({ event, eventCode, clipboardUnavailabl
           <Button
             type="primary"
             size="large"
-            icon={<SmileOutlined />}
+            icon={isFull ? null : <SmileOutlined />}
+            disabled={isFull}
             onClick={() => setRsvpOpen(true)}
             style={{ height: 56, paddingInline: 32, fontSize: token.fontSizeHeading4 }}
           >
-            RSVP now!
+            {isFull ? "Event Full" : "RSVP now!"}
           </Button>
         </Flex>
       ))}

@@ -26,6 +26,8 @@ configuration such as `next.config.mjs` or environment variables.
 The event form is [app/components/EventForm/EventForm.jsx](app/components/EventForm/EventForm.jsx), rendered from `app/page.jsx`.
 The shared Ant Design theme in [app/antd-provider.jsx](app/antd-provider.jsx)
 uses the app's teal, purple, blue, rose, and green color palette.
+The Ficofisa artwork in [public/ficofisa.png](public/ficofisa.png) is used for
+the browser favicon and app icons.
 
 ## Event storage
 
@@ -50,7 +52,8 @@ event details and offers a manual copy option if clipboard access fails. RSVP
 saves a reservation, and accepted event information is returned after a
 successful reservation. Limited event capacity
 counts people, and guests at plus-one events may reserve either one or two
-spots. A full event rejects additional reservations. The event page shows the
+spots. A full event shows a disabled "Event Full" button and rejects additional
+reservations; existing guests can still manage their RSVPs. The event page shows the
 number of spots filled and, for limited events, the total capacity; a plus-one
 counts as a second spot. Open events show the filled count without a limit.
 Reservations are saved by name; the event page displays RSVP names and plus-one
