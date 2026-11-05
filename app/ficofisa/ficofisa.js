@@ -1,23 +1,15 @@
 "use server";
 
-import { createNewEvent } from "./subcomponents/EventAdminManager/EventAdminManager";
+import { createNewEvent, reserveASpot, getEvent } from "./subcomponents/EventAdminManager/EventManager";
 
-export async function makeNewEvent(
-  eventName,
-  eventDate,
-  eventTime,
-  eventDescription,
-  eventAttendanceType,
-  maximumAllowed,
-  limitedEventMessage,
-) {
-  return createNewEvent(
-    eventName,
-    eventDate,
-    eventTime,
-    eventDescription,
-    eventAttendanceType,
-    maximumAllowed,
-    limitedEventMessage,
-  );
+export async function makeNewEvent(eventName, eventDate, eventTime, eventDescription, eventAttendanceType, maximumAllowed, acceptedEventInformation) {
+  return createNewEvent(eventName, eventDate, eventTime, eventDescription, eventAttendanceType, maximumAllowed, acceptedEventInformation);
+}
+
+export async function makeANewReservation(eventId, name, guestCount) {
+  return reserveASpot(eventId, name, guestCount);
+}
+
+export async function viewEvent(eventCode) {
+  return getEvent(eventCode);
 }

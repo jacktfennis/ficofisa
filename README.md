@@ -32,14 +32,27 @@ uses the app's teal, purple, blue, rose, and green color palette.
 Set `DATABASE_URL` to the Neon Postgres connection string in `.env.local` for
 local development. Vercel supplies this variable to the connected production
 and development environments; restart the development server after adding it.
-The table definition is in [app/schema.sql](app/schema.sql).
+The table definition is in [app/schema.sql](app/schema.sql). For an existing
+database, run [the reservation migration](app/migrations/add-reservation-counts.sql)
+once before deploying this version. It counts existing attendees as one person
+each and locks both tables while it initializes the reservation counts.
 
-All event fields are required, including the maximum allowed and limited-event
-message for open events. Saving creates an event, copies its ID when clipboard
-access is available, and opens `/<event-id>`. The event page is currently a
-placeholder and offers a manual copy option if clipboard access fails. Events
-are not sent to recipients yet. There is currently no authentication, so anyone
-who can access the application can create events.
+The event name, date, time, and description are required. The accepted event
+information field is always visible and optional for open events; it and the
+attendance limit are required for limited events. Saving creates an event, copies its ID when clipboard
+access is available, and opens `/<event-id>`. The event page shows the saved
+event details and offers a manual copy option if clipboard access fails. RSVP
+saves a reservation, and accepted event information is returned after a
+successful reservation. Limited event capacity
+counts people, and guests at plus-one events may reserve either one or two
+spots. A full event rejects additional reservations. Reservations are saved by
+name; the event page displays RSVP names and plus-one reservations to anyone
+with the event ID. The list refreshes after a successful RSVP and when the page
+is reloaded. Without authentication, a guest can submit more than one RSVP, and the
+confirmation is not restored after reloading the page. Accepted event information
+is not access-controlled: anyone with the event ID can reserve an available
+spot. Events are not sent to recipients yet. There is currently no
+authentication, so anyone who can access the application can create events.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 

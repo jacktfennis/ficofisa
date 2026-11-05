@@ -19,9 +19,9 @@ export default function Welcome() {
   const [attendance, setAttendance] = useState("open");
   const [limitedTypesOpen, setLimitedTypesOpen] = useState(false);
   const [limitedType, setLimitedType] = useState(null);
+  const [allowedTotal, setAllowedTotal] = useState(null);
   const [saving, setSaving] = useState(false);
   const savingRef = useRef(false);
-  const allowedTotal = Form.useWatch("maximumAllowed", form);
   const limitedLabel = limitedType && allowedTotal
     ? limitedType === "raw-cap"
       ? `Cap @${allowedTotal}`
@@ -30,6 +30,11 @@ export default function Welcome() {
 
   async function saveEvent(values) {
     if (savingRef.current) return;
+    if (attendance === "limited" && (!limitedType || !allowedTotal)) {
+      message.error("Choose a limit and type for your limited event.");
+      setLimitedTypesOpen(true);
+      return;
+    }
     savingRef.current = true;
     setSaving(true);
 
@@ -41,8 +46,8 @@ export default function Welcome() {
         values.time.format("HH:mm"),
         values.description,
         attendance === "open" ? "open" : limitedType,
-        values.maximumAllowed,
-        values.limitedEventMessage,
+        attendance === "limited" ? allowedTotal : null,
+        values.acceptedEventInformation || null,
       );
     } catch (error) {
       console.error("Could not save event:", error);
@@ -120,7 +125,7 @@ export default function Welcome() {
                 setAttendance("open");
                 setLimitedTypesOpen(false);
                 setLimitedType(null);
-                form.setFieldValue("maximumAllowed", undefined);
+                setAllowedTotal(null);
               }}
               style={{
                 borderColor: token.colorSuccess,
@@ -134,18 +139,10 @@ export default function Welcome() {
             </Button>
           </Flex>
           <Form.Item
-            label="Maximum Allowed"
-            name="maximumAllowed"
-            rules={[{ required: true, message: "Choose the maximum allowed." }]}
-            style={{ marginTop: token.marginLG }}
-          >
-            <Select placeholder="Choose a maximum" options={allowedTotals} />
-          </Form.Item>
-          <Form.Item
-            label="Limited Event Message"
-            name="limitedEventMessage"
-            rules={[{ required: true, whitespace: true, message: "Enter a limited event message." }]}
-            style={{ marginBottom: 0 }}
+            label="Accepted Event Information"
+            name="acceptedEventInformation"
+            rules={attendance === "limited" ? [{ required: true, whitespace: true, message: "Enter accepted event information." }] : []}
+            style={{ marginTop: token.marginLG, marginBottom: 0 }}
           >
             <Input.TextArea rows={2} style={{ height: token.controlHeight * 2 }} />
           </Form.Item>
@@ -172,7 +169,7 @@ export default function Welcome() {
               placeholder="#"
               options={allowedTotals}
               value={allowedTotal}
-              onChange={(value) => form.setFieldValue("maximumAllowed", value)}
+              onChange={setAllowedTotal}
               style={{ width: 72, minWidth: 52 }}
             />
           </Flex>
@@ -183,7 +180,7 @@ export default function Welcome() {
           if (!limitedType || !allowedTotal) {
             setAttendance("open");
             setLimitedType(null);
-            form.setFieldValue("maximumAllowed", undefined);
+            setAllowedTotal(null);
           }
         }}
         footer={null}
