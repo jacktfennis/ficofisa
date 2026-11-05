@@ -23,7 +23,7 @@ The server must remain running; `npm run start` serves a production build and
 does not provide Fast Refresh. Restart the development server after changing
 configuration such as `next.config.mjs` or environment variables.
 
-The welcome page is [app/welcome.jsx](app/welcome.jsx), rendered from `app/page.jsx`.
+The event form is [app/components/EventForm/EventForm.jsx](app/components/EventForm/EventForm.jsx), rendered from `app/page.jsx`.
 The shared Ant Design theme in [app/antd-provider.jsx](app/antd-provider.jsx)
 uses the app's teal, purple, blue, rose, and green color palette.
 
@@ -36,6 +36,11 @@ The table definition is in [app/schema.sql](app/schema.sql). For an existing
 database, run [the reservation migration](app/migrations/add-reservation-counts.sql)
 once before deploying this version. It counts existing attendees as one person
 each and locks both tables while it initializes the reservation counts.
+Then run [the reservation identity migration](app/migrations/add-reservation-identity.sql)
+once to enable remembered RSVPs and withdrawal, followed by
+[the event management migration](app/migrations/add-event-management.sql) once
+to enable creator access and cancellation. New databases created from the
+current schema do not need these migrations.
 
 The event name, date, time, and description are required. The accepted event
 information field is always visible and optional for open events; it and the
@@ -45,14 +50,40 @@ event details and offers a manual copy option if clipboard access fails. RSVP
 saves a reservation, and accepted event information is returned after a
 successful reservation. Limited event capacity
 counts people, and guests at plus-one events may reserve either one or two
-spots. A full event rejects additional reservations. Reservations are saved by
-name; the event page displays RSVP names and plus-one reservations to anyone
-with the event ID. The list refreshes after a successful RSVP and when the page
-is reloaded. Without authentication, a guest can submit more than one RSVP, and the
-confirmation is not restored after reloading the page. Accepted event information
-is not access-controlled: anyone with the event ID can reserve an available
-spot. Events are not sent to recipients yet. There is currently no
+spots. A full event rejects additional reservations. The event page shows the
+number of spots filled and, for limited events, the total capacity; a plus-one
+counts as a second spot. Open events show the filled count without a limit.
+Reservations are saved by name; the event page displays RSVP names and plus-one
+reservations to anyone with the event ID. A persistent, HTTP-only browser cookie remembers an RSVP per
+event, restores its confirmation and accepted event information on reload, and
+allows it to be withdrawn. Guests who reserved a plus-one can remove that guest
+without withdrawing their own RSVP, freeing one spot. Withdrawing frees all
+spots in that reservation. Both actions take effect immediately without a
+confirmation dialog. The spot count and RSVP list refresh after changes, on
+reload, and when returning to the tab.
+Successful RSVP submissions show a brief confetti celebration, unless the
+visitor prefers reduced motion. Restoring an existing RSVP does not replay it.
+Existing RSVPs made before the identity migration cannot be associated with a
+browser or withdrawn this way. This is not an account or a guarantee of one RSVP
+per person: clearing cookies, using a different browser or device, or using
+private browsing creates a separate identity. Losing the cookie also loses the
+ability to withdraw that RSVP. Accepted event information is not fully
+access-controlled: anyone with the event ID can reserve an available spot.
+Events are not sent to recipients yet. There is currently no
 authentication, so anyone who can access the application can create events.
+
+For events created after the event management migration, the creating browser
+can use **Manage event** on the event page to edit its details or cancel it.
+The creator identity is remembered in an HTTP-only browser cookie, separate from
+the RSVP cookie. Clearing that cookie or switching browsers or devices loses
+management access; existing events cannot be attributed retroactively because
+their creators were not recorded. Anyone with access to the creating browser
+can manage its events. A canceled event remains visible with a cancellation
+notice and no longer accepts new RSVPs. Cancellation is permanent, retains the
+existing RSVP list, and does not send notifications. Changes also do not notify
+attendees. An attendance cap cannot be reduced below the number of reserved
+spots, and a plus-one event cannot be changed to another attendance type while
+it has RSVPs. Existing reservations are preserved when an event is edited.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 

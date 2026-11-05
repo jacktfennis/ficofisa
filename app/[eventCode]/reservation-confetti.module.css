@@ -1,0 +1,38 @@
+.confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.piece {
+  position: absolute;
+  top: -20px;
+  left: var(--left);
+  width: 8px;
+  height: 14px;
+  background: var(--color);
+  animation: fall var(--duration) var(--delay) ease-in forwards;
+}
+
+.piece:nth-child(3n) {
+  border-radius: 50%;
+}
+
+@keyframes fall {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(var(--drift), 110vh, 0) rotate(var(--rotation));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti {
+    display: none;
+  }
+}
