@@ -9,5 +9,5 @@ export default async function EventPage({ params, searchParams }) {
   const event = await viewEvent(eventCode);
   if (!event) notFound();
 
-  return <EventPlaceholder event={event} eventCode={eventCode} clipboardUnavailable={clipboard === "unavailable"} />;
+  return <EventPlaceholder key={event.id} event={event} eventCode={event.id} clipboardUnavailable={clipboard === "unavailable"} />;
 }

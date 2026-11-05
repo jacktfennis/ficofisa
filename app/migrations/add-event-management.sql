@@ -1,0 +1,7 @@
+BEGIN;
+
+ALTER TABLE public.events
+    ADD COLUMN "creatorKeyHash" TEXT,
+    ADD COLUMN "canceled" BOOLEAN NOT NULL DEFAULT FALSE;
+
+COMMIT;
